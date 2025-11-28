@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Umrah Demo • Form + Location</title>
+
+<style>
+body {
+    margin: 0;
+    padding: 0;
+    font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+    background-image: url('https://images.unsplash.com/photo-1508747703725-719777637510?auto=format&fit=crop&w=1600&q=80'); 
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    color: #fff;
+    text-align: center;
+}
+
+.overlay {
+    background-color: rgba(0,0,0,0.65);
+    min-height: 100vh;
+    padding: 50px 20px;
+}
+
+h1 {
+    font-size: 3em;
+    margin-bottom: 30px;
+    font-weight: 700;
+    text-shadow: 0 3px 6px rgba(0,0,0,0.5);
+}
+
+button {
+    padding: 15px 30px;
+    font-size: 20px;
+    border: none;
+    border-radius: 8px;
+    background-color: #f0c040;
+    color: #000;
+    cursor: pointer;
+    transition: 0.2s;
+    font-weight: bold;
+}
+button:hover {
+    transform: scale(1.05);
+}
+
+form {
+    display: none;
+    margin-top: 30px;
+    background-color: rgba(255,255,255,0.92);
+    color: #000;
+    padding: 30px;
+    border-radius: 12px;
+    max-width: 400px;
+    margin: auto;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+}
+form input {
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+}
+form input[type="submit"] {
+    background-color: #f0c040;
+    color: #000;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+form input[type="submit"]:hover {
+    transform: scale(1.05);
+}
+
+#infoCard {
+    display: none;
+    margin: 30px auto 0 auto;
+    max-width: 400px;
+    background-color: rgba(255,255,255,0.95);
+    color: #000;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    text-align: left;
+    font-size: 18px;
+}
+#infoCard b { color: #333; }
+</style>
+</head>
+
+<body>
+<div class="overlay">
+<h1>Umrah Information Form</h1>
+
+<button id="startBtn">Start</button>
+
+<form id="userForm">
+    <input type="text" id="name" placeholder="Full Name" required>
+    <input type="text" id="country" placeholder="Country" required>
+    <input type="date" id="birthday" placeholder="Birthday" required>
+    <input type="text" id="passport" placeholder="Passport Number" required>
+    <input type="submit" value="Submit">
+</form>
+
+<div id="infoCard"></div>
+</div>
+
+<script>
+const startBtn = document.getElementById("startBtn");
+const form = document.getElementById("userForm");
+const infoCard = document.getElementById("infoCard");
+
+let userLocation = {
+    latitude: null,
+    longitude: null,
+    accuracy: null
+};
+
+startBtn.addEventListener("click", () => {
+    form.style.display = "block";
+    startBtn.style.display = "none";
+
+    if (navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+            pos => {
+                userLocation.latitude = pos.coords.latitude;
+                userLocation.longitude = pos.coords.longitude;
+                userLocation.accuracy = pos.coords.accuracy;
+            },
+            err => {
+                console.warn("Location denied or unavailable.");
+            }
+        );
+    }
+});
+
+form.addEventListener("submit", (e) => {
+    e.preventDefault();
+
+    const name = document.getElementById("name").value;
+    const country = document.getElementById("country").value;
+    const birthday = document.getElementById("birthday").value;
+    const passport = document.getElementById("passport").value;
+
+    infoCard.innerHTML = `
+        <p><b>Name:</b> ${name}</p>
+        <p><b>Country:</b> ${country}</p>
+        <p><b>Birthday:</b> ${birthday}</p>
+        <p><b>Passport:</b> ${passport}</p>
+        <p><b>Latitude:</b> ${userLocation.latitude ?? 'Unavailable'}</p>
+        <p><b>Longitude:</b> ${userLocation.longitude ?? 'Unavailable'}</p>
+        <p><b>Accuracy:</b> ${userLocation.accuracy ? userLocation.accuracy + 'm' : 'N/A'}</p>
+    `;
+    infoCard.style.display = "block";
+});
+</script>
+
+</body>
+</html>
